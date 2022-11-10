@@ -2,14 +2,21 @@ require 'addressable/uri'
 require 'net/http'
 require 'net/http/post/multipart'
 require 'openssl'
+require 'oauth2'
+require 'uri'
 
 class RestApi
   class ScrivitoError < StandardError; end
 
-  def initialize(base_url, tenant, api_key)
+  def initialize(base_url, scrivito_instance_id, client_id, client_secret)
     @base_url = base_url
-    @tenant = tenant
-    @api_key = api_key
+    @scrivito_instance_id = scrivito_instance_id
+    @oauth_client = OAuth2::Client.new(
+      URI.encode_www_form_component(client_id),
+      URI.encode_www_form_component(client_secret),
+      token_url: 'https://api.justrelate.com/iam/token'
+    )
+    @access_token = @oauth_client.client_credentials.get_token.token
   end
 
   def get(path, payload = nil)
@@ -60,8 +67,8 @@ class RestApi
   end
 
   def response_for_request_cms_api(method, path, payload)
-    req = method.new(URI.parse("#{@base_url}/tenants/#{@tenant}/#{path}"))
-    req.basic_auth('api_token', @api_key)
+    req = method.new(URI.parse("#{@base_url}/tenants/#{@scrivito_instance_id}/#{path}"))
+    req['Authorization'] = "Bearer #{@access_token}"
     req['Content-type'] = 'application/json'
     req['Accept'] = 'application/json'
     req['Scrivito-Priority'] = 'background'

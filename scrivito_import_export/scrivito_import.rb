@@ -3,10 +3,12 @@ require_relative "rest_api"
 
 class ScrivitoImport
   def import(dir_name:)
-    base_url = ENV.fetch("SCRIVITO_BASE_URL") { "https://api.scrivito.com" }
-    tenant = ENV.fetch("SCRIVITO_TENANT")
-    api_key = ENV.fetch("SCRIVITO_API_KEY")
-    api = RestApi.new(base_url, tenant, api_key)
+    api = RestApi.new(
+      ENV.fetch('SCRIVITO_BASE_URL') { 'https://api.scrivito.com' },
+      ENV.fetch('SCRIVITO_INSTANCE_ID'),
+      ENV.fetch('CLIENT_ID'),
+      ENV.fetch('CLIENT_SECRET')
+    )
 
     visibility_categories_ids_mapping = import_visibility_categories_and_generate_mapping(api, dir_name)
 
@@ -99,7 +101,7 @@ class ScrivitoImport
       custom_visibility_categories = JSON.parse(File.read(custom_visibility_categories_file))
       custom_visibility_categories.each do |visibility_category|
         response = api.post(
-          "visibility_categories", 
+          "visibility_categories",
           visibility_category.slice("groups", "title", "description")
         )
         original_visibility_category_id = visibility_category["id"]

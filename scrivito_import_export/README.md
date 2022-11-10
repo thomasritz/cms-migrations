@@ -8,12 +8,13 @@ Note that the importer removes all existing content from the tenant prior to imp
 ## Requirements
 
 HTTPS access to Fiona 8 or Scrivito.
-Provide these env variables: `SCRIVITO_BASE_URL`, `SCRIVITO_TENANT`, `SCRIVITO_API_KEY`.
+Provide these env variables:
 
 ```
 export SCRIVITO_BASE_URL=https://api.scrivito.com # or your Fiona 8 backend URL
-export SCRIVITO_TENANT=your_tenant_id
-export SCRIVITO_API_KEY=your_api_key
+export SCRIVITO_INSTANCE_ID=your_scrivito_instance_id
+export CLIENT_ID=your_iam_api_key_client_id
+export CLIENT_SECRET=your_iam_api_key_client_secret
 ```
 
 ## Usage of the exporter

@@ -4,10 +4,12 @@ require_relative "rest_api"
 
 class ScrivitoExport
   def export(dir_name:)
-    base_url = ENV.fetch("SCRIVITO_BASE_URL") { "https://api.scrivito.com" }
-    tenant = ENV.fetch("SCRIVITO_TENANT")
-    api_key = ENV.fetch("SCRIVITO_API_KEY")
-    api = RestApi.new(base_url, tenant, api_key)
+    api = RestApi.new(
+      ENV.fetch('SCRIVITO_BASE_URL') { 'https://api.scrivito.com' },
+      ENV.fetch('SCRIVITO_INSTANCE_ID'),
+      ENV.fetch('CLIENT_ID'),
+      ENV.fetch('CLIENT_SECRET')
+    )
 
     raise "file '#{dir_name}' exists" if File.exist?(dir_name)
     FileUtils.mkdir_p(dir_name)
@@ -15,7 +17,7 @@ class ScrivitoExport
     visibility_categories_response = api.get("visibility_categories") || {}
     custom_visibility_categories = visibility_categories_response.fetch("results")
 
-    if custom_visibility_categories.present? 
+    if custom_visibility_categories.present?
       File.open(File.join(dir_name, "custom_visibility_categories.json"), "w") do |file|
         file.write(JSON.generate(custom_visibility_categories))
       end
