@@ -83,7 +83,14 @@ class ScrivitoExport
     continuation = nil
     ids = []
     begin
-      w = api.get("workspaces/published/objs/search", "continuation" => continuation)
+      w = api.get(
+        'workspaces/published/objs/search',
+        site_aware: true,
+        continuation: continuation,
+        query: {
+          _site_id: 'mailing-app'
+        }
+      )
       ids += w["results"].map {|r| r["id"]}
     end while (continuation = w["continuation"]).present?
     after_published_rev_id = api.get("workspaces/published")["revision_id"]
